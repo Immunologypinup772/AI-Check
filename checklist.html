@@ -950,7 +950,7 @@
   const RECS = {
     'llm-1': {
       steps: ['Deploy a prompt firewall that inspects all user inputs before they reach the model','Isolate system prompt from user-provided context using delimiter tokens or separate API calls','Apply input sanitization: strip control characters, limit length, reject known injection patterns','Run automated prompt injection test suites before each release'],
-      tools: [{n:'Vigil',u:'https://github.com/deadbits/vigil-llm'},{n:'LLM Guard',u:'https://llm-guard.com'},{n:'Rebuff',u:'https://github.com/protectai/rebuff'},{n:'Prompt Security',u:'https://prompt.security'}],
+      tools: [{n:'Vigil',u:'https://github.com/deadbits/vigil-llm'},{n:'LLM Guard',u:'https://github.com/protectai/llm-guard'},{n:'Rebuff',u:'https://github.com/protectai/rebuff'},{n:'Prompt Security',u:'https://prompt.security'}],
       refs: ['OWASP LLM01:2025 — Prompt Injection','NIST AI 100-2e2025 — Adversarial ML']
     },
     'llm-2': {
@@ -965,7 +965,7 @@
     },
     'llm-4': {
       steps: ['Run evaluation suites across demographic categories (age, gender, ethnicity, language)','Use automated bias detection tools to score output distributions','Incorporate diverse, representative test scenarios into CI/CD','Embed inclusive language directives in the system prompt'],
-      tools: [{n:'Fairlearn',u:'https://fairlearn.org'},{n:'AI Fairness 360',u:'https://aif360.mybluemix.net'},{n:'DeepChecks',u:'https://deepchecks.com'}],
+      tools: [{n:'Fairlearn',u:'https://fairlearn.org'},{n:'AI Fairness 360',u:'https://github.com/Trusted-AI/AIF360'},{n:'DeepChecks',u:'https://deepchecks.com'}],
       refs: ['NIST AI RMF — MAP 2.3 Bias Management','EU AI Act Art. 10 — Data Governance']
     },
     'llm-5': {
@@ -985,7 +985,7 @@
     },
     'priv-1': {
       steps: ['Execute a Data Processing Agreement (DPA) with every LLM provider','Maintain a processing register per Art. 30 GDPR','Implement PII detection and redaction before data reaches the LLM','Display privacy policy and consent flows before first interaction'],
-      tools: [{n:'Microsoft Presidio',u:'https://github.com/microsoft/presidio'},{n:'LLM Guard PII Scanner',u:'https://llm-guard.com'},{n:'OneTrust',u:'https://onetrust.com'}],
+      tools: [{n:'Microsoft Presidio',u:'https://github.com/microsoft/presidio'},{n:'LLM Guard PII Scanner',u:'https://github.com/protectai/llm-guard'},{n:'OneTrust',u:'https://onetrust.com'}],
       refs: ['GDPR Art. 28 — Processor Obligations','GDPR Art. 30 — Records of Processing']
     },
     'priv-2': {
@@ -1020,7 +1020,7 @@
     },
     'web-2': {
       steps: ['Generate and validate anti-CSRF tokens on all state-changing endpoints','Set SameSite=Strict on session cookies; validate Origin headers','Restrict outbound server connections to an explicit allow-list','Never fetch user-supplied URLs on the server side'],
-      tools: [{n:'CSRF middleware (framework-native)',u:''},{n:'OWASP ZAP',u:'https://zaproxy.org'},{n:'Burp Suite',u:'https://portswigger.net/burp'}],
+      tools: [{n:'CSRF middleware (framework-native)',u:''},{n:'OWASP ZAP',u:'https://zaproxy.org'},{n:'Burp Suite',u:'https://portswigger.net/burp/communitydownload'}],
       refs: ['OWASP Top 10 A01:2021 — Broken Access Control']
     },
     'web-3': {
@@ -1070,7 +1070,7 @@
     },
     'mon-3': {
       steps: ['Implement automated evaluation scoring (relevance, groundedness, harmfulness)','Deploy thumbs up/down or 1-5 star feedback on every AI response','Route low-scoring responses to a human review queue','Track quality scores over time to detect model degradation'],
-      tools: [{n:'Ragas',u:'https://ragas.io'},{n:'DeepEval',u:'https://deepeval.ai'},{n:'Langfuse Scores',u:'https://langfuse.com'},{n:'TruLens',u:'https://trulens.org'}],
+      tools: [{n:'Ragas',u:'https://ragas.io'},{n:'DeepEval',u:'https://github.com/confident-ai/deepeval'},{n:'Langfuse Scores',u:'https://langfuse.com'},{n:'TruLens',u:'https://trulens.org'}],
       refs: ['NIST AI RMF — MEASURE 2.6 Evaluation']
     },
     'mon-4': {
@@ -1095,7 +1095,7 @@
     },
     'gov-3': {
       steps: ['Create a golden test set covering accuracy, safety, and edge cases (min 200 examples)','Run benchmarks automatically in CI before any prompt or model change ships','Define pass/fail thresholds for each metric (e.g., accuracy ≥ 92%, toxicity ≤ 0.5%)','Store benchmark results historically for trend analysis'],
-      tools: [{n:'Ragas',u:'https://ragas.io'},{n:'DeepEval',u:'https://deepeval.ai'},{n:'Promptfoo',u:'https://promptfoo.dev'},{n:'Opik',u:'https://github.com/comet-ml/opik'}],
+      tools: [{n:'Ragas',u:'https://ragas.io'},{n:'DeepEval',u:'https://github.com/confident-ai/deepeval'},{n:'Promptfoo',u:'https://promptfoo.dev'},{n:'Opik',u:'https://github.com/comet-ml/opik'}],
       refs: ['NIST AI RMF — MEASURE 2.6 Evaluation','MLOps Maturity Model — Level 3 Testing']
     },
     'gov-4': {
