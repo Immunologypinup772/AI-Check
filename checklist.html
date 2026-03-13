@@ -927,6 +927,7 @@
       if (state[id]) item.classList.add('checked');
 
       item.addEventListener('click', () => {
+        if (_resetting) return;
         item.classList.toggle('checked');
         const s = loadState();
         if (item.classList.contains('checked')) { s[id] = true; } 
@@ -939,11 +940,14 @@
     updateProgress();
   }
 
+  let _resetting = false;
+
   function resetAll() {
-    if (!confirm('Reset all checkboxes?')) return;
+    _resetting = true;
     localStorage.removeItem(STORAGE_KEY);
     document.querySelectorAll('.check-item.checked').forEach(i => i.classList.remove('checked'));
     updateProgress();
+    setTimeout(() => { _resetting = false; }, 300);
   }
 
   // ─── RECOMMENDATIONS DATA ───
