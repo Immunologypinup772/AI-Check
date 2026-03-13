@@ -343,6 +343,101 @@
     color: var(--text);
   }
 
+  /* ─── RECOMMENDATION PANEL ─── */
+  .rec-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    cursor: pointer;
+    margin-top: 8px;
+    padding: 3px 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    transition: color var(--transition);
+    user-select: none;
+  }
+  .rec-toggle:hover { color: var(--text); }
+  .rec-toggle .arrow { transition: transform var(--transition); display: inline-block; font-size: 10px; }
+  .rec-toggle.open .arrow { transform: rotate(180deg); }
+
+  .rec-panel {
+    grid-column: 2 / -1;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+    opacity: 0;
+  }
+  .rec-panel.open {
+    max-height: 600px;
+    opacity: 1;
+  }
+
+  .rec-inner {
+    padding: 12px 16px 4px;
+    margin-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  .rec-section-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .rec-steps {
+    list-style: none;
+    margin-bottom: 10px;
+  }
+  .rec-steps li {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--text-muted);
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 3px;
+  }
+  .rec-steps li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--text-dim);
+    font-weight: 700;
+  }
+
+  .rec-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .rec-tool {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all var(--transition);
+  }
+  .rec-tool:hover { border-color: var(--border-strong); color: var(--text); }
+
+  .rec-ref {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .rec-ref a { color: var(--text-muted); text-decoration: none; border-bottom: 1px solid var(--border); }
+  .rec-ref a:hover { color: var(--text); }
+
   /* ─── RESPONSIVE ─── */
   @media (max-width: 768px) {
     .hero { padding: 48px 20px 36px; }
@@ -350,6 +445,7 @@
     .content, .progress-container, .footer, .reset-wrap { padding-left: 20px; padding-right: 20px; }
     .check-item { grid-template-columns: 36px 1fr; gap: 4px; }
     .severity { grid-column: 2; margin-top: 6px; width: fit-content; }
+    .rec-panel { grid-column: 2; }
     .footer { flex-direction: column; gap: 12px; text-align: center; }
   }
 
@@ -357,6 +453,7 @@
   @media print {
     .reset-wrap, .progress-container { display: none; }
     .check-item { border: 1px solid #ddd; break-inside: avoid; }
+    .rec-panel { max-height: none; opacity: 1; }
   }
 </style>
 </head>
@@ -849,7 +946,255 @@
     updateProgress();
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  // ─── RECOMMENDATIONS DATA ───
+  const RECS = {
+    'llm-1': {
+      steps: ['Deploy a prompt firewall that inspects all user inputs before they reach the model','Isolate system prompt from user-provided context using delimiter tokens or separate API calls','Apply input sanitization: strip control characters, limit length, reject known injection patterns','Run automated prompt injection test suites before each release'],
+      tools: [{n:'Vigil',u:'https://github.com/deadbits/vigil-llm'},{n:'LLM Guard',u:'https://llm-guard.com'},{n:'Rebuff',u:'https://github.com/protectai/rebuff'},{n:'Prompt Security',u:'https://prompt.security'}],
+      refs: ['OWASP LLM01:2025 — Prompt Injection','NIST AI 100-2e2025 — Adversarial ML']
+    },
+    'llm-2': {
+      steps: ['Test with known jailbreak datasets (DAN, AIM, role-play, encoding-based)','Deploy output classifiers that detect policy-violating responses','Implement multi-turn conversation analysis to catch escalation attacks','Use model providers\' built-in safety settings at maximum strictness'],
+      tools: [{n:'Garak',u:'https://github.com/leondz/garak'},{n:'Prompt Fuzzer',u:'https://github.com/prompt-security/ps-fuzz'},{n:'Lakera Guard',u:'https://lakera.ai'}],
+      refs: ['OWASP LLM01:2025 — Prompt Injection','MITRE ATLAS — AML.T0054 LLM Jailbreak']
+    },
+    'llm-3': {
+      steps: ['Ground all responses in a RAG pipeline with verified, versioned documents','Set temperature ≤ 0.3 for factual tasks; use 0.0 for structured extraction','Require the model to cite source documents in every response','Add confidence disclaimers: "This is AI-generated and may be inaccurate"'],
+      tools: [{n:'LlamaIndex',u:'https://llamaindex.ai'},{n:'LangChain',u:'https://langchain.com'},{n:'Vectara',u:'https://vectara.com'},{n:'Ragas',u:'https://ragas.io'}],
+      refs: ['OWASP LLM09:2025 — Misinformation']
+    },
+    'llm-4': {
+      steps: ['Run evaluation suites across demographic categories (age, gender, ethnicity, language)','Use automated bias detection tools to score output distributions','Incorporate diverse, representative test scenarios into CI/CD','Embed inclusive language directives in the system prompt'],
+      tools: [{n:'Fairlearn',u:'https://fairlearn.org'},{n:'AI Fairness 360',u:'https://aif360.mybluemix.net'},{n:'DeepChecks',u:'https://deepchecks.com'}],
+      refs: ['NIST AI RMF — MAP 2.3 Bias Management','EU AI Act Art. 10 — Data Governance']
+    },
+    'llm-5': {
+      steps: ['Enable provider-level content filters (e.g., AWS Bedrock Guardrails, Azure Content Safety)','Add a secondary output classifier for toxicity, hate speech, and off-topic detection','Provide a visible "Report this response" button for end users','Log all filtered content for review and pattern analysis'],
+      tools: [{n:'OpenAI Moderation API',u:'https://platform.openai.com/docs/guides/moderation'},{n:'Guardrails AI',u:'https://guardrailsai.com'},{n:'TrustyAI',u:'https://github.com/trustyai-explainability'}],
+      refs: ['OWASP LLM05:2025 — Improper Output Handling']
+    },
+    'llm-6': {
+      steps: ['Restrict write access to the knowledge base to authorized personnel only','Track all document changes in version control (Git)','Require peer review before any knowledge base update goes live','Run automated integrity checksums on RAG source documents'],
+      tools: [{n:'Git',u:'https://git-scm.com'},{n:'DVC (Data Version Control)',u:'https://dvc.org'}],
+      refs: ['OWASP LLM04:2025 — Data and Model Poisoning','OWASP LLM08:2025 — Vector and Embedding Weaknesses']
+    },
+    'llm-7': {
+      steps: ['Schedule adversarial red-team sessions before every major release','Use automated fuzzing tools to test thousands of attack vectors','Include prompt injection, jailbreak, data exfiltration, and PII leak scenarios','Document all findings and track remediation in a security register'],
+      tools: [{n:'Garak',u:'https://github.com/leondz/garak'},{n:'Prompt Fuzzer',u:'https://github.com/prompt-security/ps-fuzz'},{n:'HuggingFace Red Team',u:'https://huggingface.co/blog/red-teaming'}],
+      refs: ['NIST AI 100-2e2025 — Adversarial ML Testing','MITRE ATLAS Framework']
+    },
+    'priv-1': {
+      steps: ['Execute a Data Processing Agreement (DPA) with every LLM provider','Maintain a processing register per Art. 30 GDPR','Implement PII detection and redaction before data reaches the LLM','Display privacy policy and consent flows before first interaction'],
+      tools: [{n:'Microsoft Presidio',u:'https://github.com/microsoft/presidio'},{n:'LLM Guard PII Scanner',u:'https://llm-guard.com'},{n:'OneTrust',u:'https://onetrust.com'}],
+      refs: ['GDPR Art. 28 — Processor Obligations','GDPR Art. 30 — Records of Processing']
+    },
+    'priv-2': {
+      steps: ['Classify data by sensitivity tier (public, internal, confidential, restricted)','Enforce TLS 1.2+ for all data in transit; AES-256 for data at rest','Implement field-level encryption for special-category data (health, financial)','Restrict access to sensitive data to named, authorized personnel only'],
+      tools: [{n:'HashiCorp Vault',u:'https://vaultproject.io'},{n:'AWS KMS',u:'https://aws.amazon.com/kms'},{n:'SOPS',u:'https://github.com/getsops/sops'}],
+      refs: ['GDPR Art. 9 — Special Category Data','HIPAA Security Rule (if US health data)']
+    },
+    'priv-3': {
+      steps: ['Display a persistent banner: "You are interacting with an AI assistant"','Document the AI system\'s risk classification per EU AI Act tiers','Prepare technical documentation including model capabilities and limitations','Assign a human oversight contact for the AI system'],
+      tools: [{n:'EU AI Act Compliance Checker',u:'https://artificialintelligenceact.eu'},{n:'ISO/IEC 42001',u:'https://www.iso.org/standard/81230.html'}],
+      refs: ['EU AI Act Art. 52 — Transparency Obligations','EU AI Act Art. 13 — Transparency for High-Risk']
+    },
+    'priv-4': {
+      steps: ['Source all RAG content exclusively from owned or licensed material','Display a liability disclaimer on every AI response','Implement a legal review workflow for generated text in regulated domains','Add output watermarking or provenance metadata where applicable'],
+      tools: [{n:'C2PA (Content Provenance)',u:'https://c2pa.org'},{n:'Copyscape API',u:'https://copyscape.com'}],
+      refs: ['EU AI Act Art. 52(3) — AI-generated Content Marking','Copyright Directive 2019/790']
+    },
+    'priv-5': {
+      steps: ['Log all LLM API calls with timestamps, token counts, and response metadata','Ensure logs are PII-free — redact user inputs or use hashed identifiers','Define a log retention policy (e.g., 90 days operational, 1 year compliance)','Aggregate logs into a central platform with search and alerting'],
+      tools: [{n:'Langfuse',u:'https://langfuse.com'},{n:'OpenTelemetry',u:'https://opentelemetry.io'},{n:'ELK Stack',u:'https://elastic.co/elk-stack'}],
+      refs: ['GDPR Art. 30 — Records of Processing','BSI C5 — Logging Requirements']
+    },
+    'priv-6': {
+      steps: ['Define TTLs for conversation data (e.g., 30 days for ephemeral, 1 year for support)','Implement automated purge jobs that run on schedule','Provide a self-service data deletion endpoint for right-to-erasure requests','Verify deletion completeness including backups and vector embeddings'],
+      tools: [{n:'Custom cron jobs',u:''},{n:'AWS S3 Lifecycle Rules',u:'https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html'}],
+      refs: ['GDPR Art. 17 — Right to Erasure','GDPR Art. 5(1)(e) — Storage Limitation']
+    },
+    'web-1': {
+      steps: ['HTML-escape all model outputs before DOM insertion — never use innerHTML with raw LLM text','Set Content-Security-Policy headers: block inline scripts, restrict sources','Use a sanitization library for any markdown-to-HTML conversion','Sandbox AI-generated content in iframes if it must render rich HTML'],
+      tools: [{n:'DOMPurify',u:'https://github.com/cure53/DOMPurify'},{n:'helmet.js',u:'https://helmetjs.github.io'},{n:'CSP Evaluator',u:'https://csp-evaluator.withgoogle.com'}],
+      refs: ['OWASP LLM05:2025 — Improper Output Handling','OWASP Top 10 A03:2021 — Injection']
+    },
+    'web-2': {
+      steps: ['Generate and validate anti-CSRF tokens on all state-changing endpoints','Set SameSite=Strict on session cookies; validate Origin headers','Restrict outbound server connections to an explicit allow-list','Never fetch user-supplied URLs on the server side'],
+      tools: [{n:'CSRF middleware (framework-native)',u:''},{n:'OWASP ZAP',u:'https://zaproxy.org'},{n:'Burp Suite',u:'https://portswigger.net/burp'}],
+      refs: ['OWASP Top 10 A01:2021 — Broken Access Control']
+    },
+    'web-3': {
+      steps: ['Use cryptographically random session IDs (min 128-bit entropy)','Set cookie flags: HttpOnly, Secure, SameSite=Strict','Configure session timeout (15–30 min idle, 8h absolute)','Regenerate session ID after authentication events'],
+      tools: [{n:'Framework session middleware',u:''},{n:'OWASP Session Management Cheat Sheet',u:'https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html'}],
+      refs: ['OWASP Top 10 A07:2021 — Identification and Authentication Failures']
+    },
+    'web-4': {
+      steps: ['Validate request body size (e.g., max 4KB for chat messages)','Enforce type checking on all API parameters','Reject requests with unexpected fields or formats early','Implement request rate limiting per endpoint'],
+      tools: [{n:'Joi / Zod (schema validation)',u:'https://zod.dev'},{n:'express-validator',u:'https://express-validator.github.io'}],
+      refs: ['OWASP Top 10 A03:2021 — Injection']
+    },
+    'infra-1': {
+      steps: ['Store API keys in a secrets manager — never in source code or .env files in repos','Use pre-commit hooks (e.g., git-secrets) to prevent accidental credential commits','Automate key rotation on a 90-day cycle','Apply least-privilege IAM roles to all service accounts'],
+      tools: [{n:'HashiCorp Vault',u:'https://vaultproject.io'},{n:'AWS Secrets Manager',u:'https://aws.amazon.com/secrets-manager'},{n:'git-secrets',u:'https://github.com/awslabs/git-secrets'},{n:'truffleHog',u:'https://github.com/trufflesecurity/trufflehog'}],
+      refs: ['OWASP LLM07:2025 — System Prompt Leakage','CIS Benchmark — Secrets Management']
+    },
+    'infra-2': {
+      steps: ['Enforce per-IP rate limits (e.g., 20 req/min) and per-session limits','Deploy a WAF or CDN edge firewall (Cloudflare, AWS WAF) in front of AI endpoints','Trigger CAPTCHA after suspicious request patterns','Set up cost-alert kill switches that disable endpoints on spend anomalies'],
+      tools: [{n:'Cloudflare WAF',u:'https://cloudflare.com/waf'},{n:'AWS WAF',u:'https://aws.amazon.com/waf'},{n:'nginx rate limiting',u:'https://nginx.org/en/docs/http/ngx_http_limit_req_module.html'}],
+      refs: ['OWASP LLM10:2025 — Unbounded Consumption']
+    },
+    'infra-3': {
+      steps: ['Implement retry logic with exponential backoff and jitter','Prepare static fallback responses for when the LLM provider is unreachable','Create health-check endpoints that probe LLM API availability','Offer a public status page so users know when the AI is degraded'],
+      tools: [{n:'Upptime',u:'https://upptime.js.org'},{n:'Cachet',u:'https://cachethq.io'},{n:'LiteLLM',u:'https://litellm.ai'}],
+      refs: ['SRE Handbook — Graceful Degradation Patterns']
+    },
+    'infra-4': {
+      steps: ['Build an abstraction layer (adapter pattern) between your app and the LLM API','Evaluate at least 2 alternative providers and document feature parity','Negotiate SLAs covering uptime, latency, and data handling','Document an exit strategy with timeline and migration steps'],
+      tools: [{n:'LiteLLM',u:'https://litellm.ai'},{n:'OpenRouter',u:'https://openrouter.ai'},{n:'Portkey',u:'https://portkey.ai'}],
+      refs: ['EU AI Act — Vendor Risk Assessment','NIST AI RMF — GOVERN 1.2 Risk Tolerance']
+    },
+    'infra-5': {
+      steps: ['Create dedicated service accounts with minimal permissions for each AI workload','Isolate AI infrastructure in a separate VPC or network segment','Audit IAM policies quarterly; remove unused permissions','Enable CloudTrail or equivalent audit logging for all API access'],
+      tools: [{n:'AWS IAM Access Analyzer',u:'https://aws.amazon.com/iam/access-analyzer'},{n:'ScoutSuite',u:'https://github.com/nccgroup/ScoutSuite'}],
+      refs: ['CIS Benchmark — Least Privilege','NIST SP 800-53 AC-6']
+    },
+    'mon-1': {
+      steps: ['Instrument LLM calls to capture P50/P95/P99 latency and TTFT (time to first token)','Set alerting thresholds (e.g., P95 > 3s triggers warning, P95 > 8s triggers critical)','Build dashboards with real-time and 7-day/30-day historical trends','Track throughput (requests/second) alongside latency for capacity planning'],
+      tools: [{n:'Langfuse',u:'https://langfuse.com'},{n:'Helicone',u:'https://helicone.ai'},{n:'Phoenix (Arize)',u:'https://phoenix.arize.com'},{n:'Datadog LLM Observability',u:'https://datadoghq.com'}],
+      refs: ['Google SRE — Latency SLIs/SLOs']
+    },
+    'mon-2': {
+      steps: ['Log input and output token counts per request with feature/endpoint tags','Build daily and monthly cost dashboards broken down by model and feature','Set up anomaly detection to alert on token usage spikes (>2x baseline)','Compare actual spend against forecasted budget weekly'],
+      tools: [{n:'Helicone',u:'https://helicone.ai'},{n:'Langfuse',u:'https://langfuse.com'},{n:'OpenMeter',u:'https://openmeter.io'}],
+      refs: ['FinOps Foundation — AI Cost Management']
+    },
+    'mon-3': {
+      steps: ['Implement automated evaluation scoring (relevance, groundedness, harmfulness)','Deploy thumbs up/down or 1-5 star feedback on every AI response','Route low-scoring responses to a human review queue','Track quality scores over time to detect model degradation'],
+      tools: [{n:'Ragas',u:'https://ragas.io'},{n:'DeepEval',u:'https://deepeval.ai'},{n:'Langfuse Scores',u:'https://langfuse.com'},{n:'TruLens',u:'https://trulens.org'}],
+      refs: ['NIST AI RMF — MEASURE 2.6 Evaluation']
+    },
+    'mon-4': {
+      steps: ['Establish baseline metrics for topic distribution, refusal rate, and avg response length','Monitor for statistical shifts using rolling comparisons against baselines','Alert when refusal rates or topic distributions deviate by >15%','Investigate drift root causes: model update, data change, or attack pattern'],
+      tools: [{n:'Phoenix (Arize)',u:'https://phoenix.arize.com'},{n:'Evidently AI',u:'https://evidentlyai.com'},{n:'WhyLabs',u:'https://whylabs.ai'}],
+      refs: ['NIST AI RMF — MEASURE 3.2 Monitoring']
+    },
+    'mon-5': {
+      steps: ['Track API errors, timeouts, and content-filter rejections as separate metrics','Build a root-cause dashboard distinguishing model errors from infra errors','Set alert thresholds for error rates (e.g., >5% error rate = critical)','Run weekly error pattern reviews to identify systemic issues'],
+      tools: [{n:'Sentry',u:'https://sentry.io'},{n:'Langfuse',u:'https://langfuse.com'},{n:'PagerDuty',u:'https://pagerduty.com'}],
+      refs: ['SRE Handbook — Error Budgets']
+    },
+    'gov-1': {
+      steps: ['Tag every model/prompt change with a semantic version (e.g., v2.3.1)','Maintain a changelog documenting what changed, why, and expected impact','Store prompt versions in version control alongside application code','Link each deployment to its model + prompt version for traceability'],
+      tools: [{n:'Git',u:'https://git-scm.com'},{n:'Langfuse Prompt Management',u:'https://langfuse.com'},{n:'Weights & Biases',u:'https://wandb.ai'}],
+      refs: ['MLOps Maturity Model — Level 2 Versioning']
+    },
+    'gov-2': {
+      steps: ['Document a rollback runbook with exact steps and responsible owners','Test rollback in staging before every production model swap','Implement one-click rollback capability (revert prompt version, model, or both)','Define rollback triggers: quality score drop, error spike, or safety incident'],
+      tools: [{n:'Feature flags (LaunchDarkly)',u:'https://launchdarkly.com'},{n:'ArgoCD Rollback',u:'https://argoproj.github.io/cd'},{n:'Langfuse Versions',u:'https://langfuse.com'}],
+      refs: ['SRE Handbook — Rollback Procedures']
+    },
+    'gov-3': {
+      steps: ['Create a golden test set covering accuracy, safety, and edge cases (min 200 examples)','Run benchmarks automatically in CI before any prompt or model change ships','Define pass/fail thresholds for each metric (e.g., accuracy ≥ 92%, toxicity ≤ 0.5%)','Store benchmark results historically for trend analysis'],
+      tools: [{n:'Ragas',u:'https://ragas.io'},{n:'DeepEval',u:'https://deepeval.ai'},{n:'Promptfoo',u:'https://promptfoo.dev'},{n:'Opik',u:'https://github.com/comet-ml/opik'}],
+      refs: ['NIST AI RMF — MEASURE 2.6 Evaluation','MLOps Maturity Model — Level 3 Testing']
+    },
+    'gov-4': {
+      steps: ['Create a model card documenting: model name, version, provider, capabilities, limitations','List intended use cases and explicitly out-of-scope use cases','Document known biases, failure modes, and ethical considerations','Update the model card with every model or prompt change'],
+      tools: [{n:'Model Card Toolkit',u:'https://github.com/tensorflow/model-card-toolkit'},{n:'HuggingFace Model Cards',u:'https://huggingface.co/docs/hub/model-cards'}],
+      refs: ['EU AI Act Art. 13 — Transparency Requirements','Google Model Cards Paper (2019)']
+    },
+    'gov-5': {
+      steps: ['Route a percentage of traffic (e.g., 5-10%) to the new model/prompt version','Compare quality metrics (accuracy, latency, cost, safety) side by side','Require statistical significance before promoting the new version','Document A/B test results and decision rationale'],
+      tools: [{n:'LaunchDarkly',u:'https://launchdarkly.com'},{n:'Statsig',u:'https://statsig.com'},{n:'Langfuse',u:'https://langfuse.com'}],
+      refs: ['Google AI — Best Practices for ML Deployment']
+    },
+    'cost-1': {
+      steps: ['Configure hard spending limits at the LLM provider dashboard','Set up alerts at 50%, 80%, and 100% of monthly budget','Implement a kill switch that disables non-critical AI features on budget breach','Review and adjust budgets monthly based on actual usage trends'],
+      tools: [{n:'Provider billing dashboards',u:''},{n:'Helicone',u:'https://helicone.ai'},{n:'Portkey',u:'https://portkey.ai'}],
+      refs: ['FinOps Foundation — Cloud Cost Management']
+    },
+    'cost-2': {
+      steps: ['Set max_tokens limits per request based on use case (e.g., 500 for chat, 2000 for reports)','Cap conversation history context to the last N turns (e.g., 10)','Use prompt compression techniques to reduce input token count','Implement streaming with early termination for verbose responses'],
+      tools: [{n:'LLMLingua',u:'https://github.com/microsoft/LLMLingua'},{n:'tiktoken',u:'https://github.com/openai/tiktoken'},{n:'LiteLLM',u:'https://litellm.ai'}],
+      refs: ['OWASP LLM10:2025 — Unbounded Consumption']
+    },
+    'cost-3': {
+      steps: ['Tag every LLM API call with the originating feature or endpoint','Build per-feature cost dashboards showing daily/weekly/monthly spend','Identify the top 3 cost-driving features and evaluate optimization opportunities','Share cost reports with feature teams to create cost accountability'],
+      tools: [{n:'Helicone',u:'https://helicone.ai'},{n:'Langfuse',u:'https://langfuse.com'},{n:'OpenMeter',u:'https://openmeter.io'}],
+      refs: ['FinOps Foundation — Unit Economics']
+    },
+    'cost-4': {
+      steps: ['Evaluate semantic caching for frequent identical queries','Route simple tasks to smaller, cheaper models (model routing)','Use batch inference for non-real-time workloads','Document unit economics: cost per conversation, cost per feature, cost per user'],
+      tools: [{n:'GPTCache',u:'https://github.com/zilliztech/GPTCache'},{n:'LiteLLM Router',u:'https://litellm.ai'},{n:'Portkey Gateway',u:'https://portkey.ai'}],
+      refs: ['FinOps Foundation — Optimization Pillars']
+    },
+    'ux-1': {
+      steps: ['Display a "Talk to a human" button on every AI conversation','Detect frustration signals (repeated questions, negative feedback) and auto-escalate','Clearly communicate what the AI can and cannot do at conversation start','Provide direct contact options (phone, email, ticket) alongside the AI response'],
+      tools: [{n:'Intercom',u:'https://intercom.com'},{n:'Zendesk',u:'https://zendesk.com'}],
+      refs: ['EU AI Act Art. 14 — Human Oversight','ISO 9241-210 — Human-centred Design']
+    },
+    'ux-2': {
+      steps: ['Display a persistent AI disclosure: "You are chatting with an AI assistant"','Use distinct visual indicators (icon, color, label) to differentiate AI from human','Never impersonate a human identity or professional role','Include AI disclosure in the first message of every conversation'],
+      tools: [{n:'Custom UI component',u:''}],
+      refs: ['EU AI Act Art. 52 — Transparency Obligations','FTC Guidelines on AI Disclosure']
+    },
+    'ux-3': {
+      steps: ['Add thumbs up/down buttons on every AI response','Provide a "Report this response" option with category selection (inaccurate, offensive, etc.)','Route flagged responses to a human review queue','Use aggregated feedback data to identify systematic quality issues'],
+      tools: [{n:'Langfuse User Feedback',u:'https://langfuse.com'},{n:'Custom feedback widget',u:''}],
+      refs: ['NIST AI RMF — GOVERN 5.1 Feedback Mechanisms']
+    },
+    'ux-4': {
+      steps: ['Ensure the chat interface meets WCAG 2.1 AA standards','Test with screen readers (VoiceOver, NVDA) to verify AI responses are properly parsed','Support full keyboard navigation throughout the chat experience','Provide sufficient color contrast and text sizing options'],
+      tools: [{n:'axe DevTools',u:'https://deque.com/axe'},{n:'Lighthouse Accessibility Audit',u:'https://developer.chrome.com/docs/lighthouse'},{n:'WAVE',u:'https://wave.webaim.org'}],
+      refs: ['WCAG 2.1 AA — Web Content Accessibility Guidelines','ADA Compliance']
+    }
+  };
+
+  // ─── INJECT RECOMMENDATION PANELS ───
+  function injectRecs() {
+    document.querySelectorAll('.check-item').forEach(item => {
+      const id = item.dataset.id;
+      const rec = RECS[id];
+      if (!rec) return;
+
+      // Add toggle button to item-content
+      const content = item.querySelector('.item-content');
+      const toggle = document.createElement('button');
+      toggle.className = 'rec-toggle';
+      toggle.innerHTML = 'Recommendation <span class="arrow">▼</span>';
+      toggle.addEventListener('click', e => {
+        e.stopPropagation();
+        toggle.classList.toggle('open');
+        panel.classList.toggle('open');
+      });
+      content.appendChild(toggle);
+
+      // Build panel
+      const panel = document.createElement('div');
+      panel.className = 'rec-panel';
+      let html = '<div class="rec-inner">';
+      html += '<div class="rec-section-title">Recommended Actions</div><ul class="rec-steps">';
+      rec.steps.forEach(s => html += `<li>${s}</li>`);
+      html += '</ul>';
+      if (rec.tools && rec.tools.length) {
+        html += '<div class="rec-section-title">Tools & Frameworks</div><div class="rec-tools">';
+        rec.tools.forEach(t => {
+          if (t.u) html += `<a href="${t.u}" target="_blank" rel="noopener" class="rec-tool">${t.n}</a>`;
+          else html += `<span class="rec-tool">${t.n}</span>`;
+        });
+        html += '</div>';
+      }
+      if (rec.refs && rec.refs.length) {
+        html += '<div class="rec-section-title">References</div>';
+        rec.refs.forEach(r => html += `<div class="rec-ref">${r}</div>`);
+      }
+      html += '</div>';
+      panel.innerHTML = html;
+      item.appendChild(panel);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => { init(); injectRecs(); });
 </script>
 
 </body>
