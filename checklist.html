@@ -613,7 +613,7 @@
     <div class="category-header">
       <div class="category-number">3</div>
       <div class="category-title">Application Security</div>
-      <span class="category-count">4 items</span>
+      <span class="category-count">5 items</span>
     </div>
     <div class="check-list">
       <div class="check-item" data-id="web-1">
@@ -647,6 +647,14 @@
           <div class="item-why">Request payloads are validated for size, type, and format before reaching the model. Malformed or oversized inputs are rejected early.</div>
         </div>
         <div class="severity medium">Medium</div>
+      </div>
+      <div class="check-item" data-id="web-5">
+        <div class="check-box"></div>
+        <div class="item-content">
+          <div class="item-title">Zip bomb / decompression bomb defense</div>
+          <div class="item-why">Uploaded archives are validated before extraction. Limits on decompressed size, nesting depth, and file count prevent malicious archives from exhausting server memory, disk, or CPU.</div>
+        </div>
+        <div class="severity high">High</div>
       </div>
     </div>
   </div>
@@ -1036,6 +1044,11 @@
       steps: ['Validate request body size (e.g., max 4KB for chat messages)','Enforce type checking on all API parameters','Reject requests with unexpected fields or formats early','Implement request rate limiting per endpoint'],
       tools: [{n:'Joi / Zod (schema validation)',u:'https://zod.dev'},{n:'express-validator',u:'https://express-validator.github.io'}],
       refs: ['OWASP Top 10 A03:2021 — Injection']
+    },
+    'web-5': {
+      steps: ['Enforce a maximum decompressed size limit (e.g., 100 MB) and abort extraction when exceeded','Limit archive nesting depth (e.g., max 2 levels) to block recursive zip bombs','Cap the number of files inside a single archive (e.g., max 1,000)','Stream-decompress and count bytes instead of extracting to disk — reject before writing','Validate MIME type and magic bytes of uploaded files before processing'],
+      tools: [{n:'ClamAV',u:'https://clamav.net'},{n:'Yara Rules',u:'https://virustotal.github.io/yara'},{n:'file-type (npm)',u:'https://github.com/sindresorhus/file-type'},{n:'zipbomb-scanner',u:'https://github.com/BuddhaLabs/PacketStorm-Exploits'}],
+      refs: ['OWASP — Unrestricted File Upload','CWE-409 — Improper Handling of Highly Compressed Data (Data Amplification)']
     },
     'infra-1': {
       steps: ['Store API keys in a secrets manager — never in source code or .env files in repos','Use pre-commit hooks (e.g., git-secrets) to prevent accidental credential commits','Automate key rotation on a 90-day cycle','Apply least-privilege IAM roles to all service accounts'],
